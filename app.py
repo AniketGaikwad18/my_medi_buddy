@@ -3,86 +3,70 @@ from main import predict_disease, symptom_index
 from streamlit_lottie import st_lottie
 import requests
 
-# Load Lottie animation
-def load_lottie_url(url):
+def load_lottieurl(url):
     r = requests.get(url)
     if r.status_code != 200:
         return None
     return r.json()
 
-# Lottie animations
-lottie_health = load_lottie_url("https://assets1.lottiefiles.com/packages/lf20_ks1irfoc.json")
-lottie_doctor = load_lottie_url("https://assets7.lottiefiles.com/packages/lf20_uhg5v4.json")
+# Set page config
+st.set_page_config(page_title="my_medi_buddy", page_icon="💊", layout="wide")
 
-# Page config
-st.set_page_config(page_title="my_medi_buddy", page_icon="💊", layout="centered")
+# Navigation
+page = st.sidebar.selectbox("Navigate", ["Home", "About Us"])
 
-# Sidebar navigation
-page = st.sidebar.radio("Navigation", ["Home", "Predict Disease", "About Us"])
-
-# HOME PAGE
 if page == "Home":
-    st.markdown("""
-        <h1 style='text-align: center; color: #2E8B57;'>my_medi_buddy</h1>
-    """, unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: green;'>my_medi_buddy</h1>", unsafe_allow_html=True)
 
-    if lottie_health:
-        st_lottie(lottie_health, height=250)
+    st.markdown(
+        '''
+        <div style="background-color:#e8f5e9; padding: 20px; border-radius: 10px">
+            <h3 style="color:#2e7d32;">💡 Why is it important to stay healthy?</h3>
+            <ul style="color:#1b5e20;">
+                <li><b>Workouts</b> improve heart health, boost your mood, and build strength.</li>
+                <li><b>Eating healthy</b> supports your immune system and gives you lasting energy.</li>
+                <li><b>Keeping your body active</b> helps reduce stress and chronic illness.</li>
+            </ul>
+        </div>
+        ''',
+        unsafe_allow_html=True
+    )
 
-  st.markdown("""
-    <div style='background-color: #E8F5E9; padding: 15px; border-radius: 10px;'>
-        <h3>💡 Why is it important to stay healthy?</h3>
-        <ul>
-            <li><b>Workouts</b> improve heart health, boost your mood, and build strength.</li>
-            <li><b>Eating healthy</b> supports your immune system and gives you lasting energy.</li>
-            <li>Keeping your body active helps reduce stress and chronic illness.</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("---")
 
-# PREDICT DISEASE PAGE
-elif page == "Predict Disease":
-    st.markdown("""
-        <h2 style='color: #2E8B57;'>🧠 Enter Your Symptoms</h2>
-    """, unsafe_allow_html=True)
+    symptoms_input = st.text_input("Enter your symptoms (comma-separated, e.g. headache, fever, cough):")
+    st.markdown("*Please enter at least 3 symptoms to get accurate results.*")
 
-    st.info("Enter at least 3 valid symptoms. Suggestions will appear as you type.")
-
-    all_symptoms = sorted(symptom_index.keys())
-    selected_symptoms = st.multiselect("Select your symptoms:", options=all_symptoms)
-
-    if st.button("Predict Disease"):
-        if len(selected_symptoms) < 3:
-            st.warning("Please enter at least 3 symptoms for accurate prediction.")
+    if st.button("Predict"):
+        input_symptoms = [s.strip() for s in symptoms_input.split(",") if s.strip() in symptom_index]
+        if len(input_symptoms) < 3:
+            st.warning("⚠️ Please enter at least 3 valid symptoms from the dataset.")
         else:
-            result = predict_disease(selected_symptoms)
-            st.success(f"Predicted Disease: {result['disease']}")
-            st.markdown(f"**Description:** {result['description']}")
-            st.markdown("**Precautions:**")
-            for precaution in result['precautions']:
-                st.write(f"- {precaution}")
+            prediction = predict_disease(input_symptoms)
+            st.success(f"**Predicted Disease:** {prediction}")
 
-            if lottie_doctor:
-                st_lottie(lottie_doctor, height=200)
+            # Animation
+            lottie_url = "https://assets4.lottiefiles.com/packages/lf20_jcikwtux.json"
+            lottie_json = load_lottieurl(lottie_url)
+            if lottie_json:
+                st_lottie(lottie_json, height=300)
 
-            st.markdown("""
-                <div style='background-color: #FFF3CD; padding: 15px; border-radius: 10px; margin-top: 20px;'>
-                    <b>Note:</b> This disease prediction is based on data analysis. If symptoms worsen or persist, please consult a certified medical professional immediately.
-                </div>
-            """, unsafe_allow_html=True)
+            # Note
+            st.info("🩺 This prediction is based on data and is for informational purposes only. "
+                    "In case of emergency or worsening symptoms, please consult a medical professional.")
 
-# ABOUT US PAGE
+    st.markdown("<div style='text-align: right;'>Created by <b>Aniket</b></div>", unsafe_allow_html=True)
+
 elif page == "About Us":
+    st.markdown("<h1 style='color: green;'>About My Medi Buddy</h1>", unsafe_allow_html=True)
     st.markdown("""
-        <h2 style='color: #2E8B57;'>About my_medi_buddy</h2>
-        <p><b>Developer:</b> Aniket Gaikwad</p>
-        <p><b>Project Purpose:</b> This application is designed to help users predict possible diseases based on their symptoms using a machine learning model. It also offers precautionary measures and health advice.</p>
-        <p><b>Technology Used:</b> Python, Streamlit, Random Forest Classifier, and health-related datasets from Kaggle.</p>
-        <p>Thank you for using <b>my_medi_buddy</b>. Stay healthy, stay informed. 💚</p>
-    """, unsafe_allow_html=True)
+**Creator:** Aniket Gaikwad  
+**Project:** Machine Learning Based Disease Prediction System  
+**Description:**  
+This web application uses a Random Forest Classifier trained on symptoms data to predict the likely disease.  
+It provides basic healthcare tips and encourages a healthy lifestyle.  
 
-# Footer
-st.markdown("""
-    <hr style='border: 1px solid #ccc;'/>
-    <div style='text-align:right; color:gray;'>Created by <b>Aniket</b></div>
-""", unsafe_allow_html=True)
+📢 Please note: This tool is meant to guide and inform, but it is not a substitute for professional medical advice.  
+
+🙏 Thank you for using **my_medi_buddy**! Stay healthy and safe 💚
+    """)
