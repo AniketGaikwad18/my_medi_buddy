@@ -1,0 +1,2 @@
+# my_medi_buddy
+my_medi_buddy is a smart medical assistant built using Machine Learning and Streamlit that helps users predict possible diseases based on symptoms. It also suggests helpful precautionary measures and provides a brief description of the illness.  This project aims to provide initial guidance and awareness for individuals, especially in emergency or uncertain situations, but it does not replace professional medical advice.
