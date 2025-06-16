@@ -29,8 +29,7 @@ if page == "Home":
     if lottie_health:
         st_lottie(lottie_health, height=250)
 
-   st.markdown(
-    """
+   st.markdown("""
     <div style="background-color:#e8f5e9; padding: 20px; border-radius: 10px">
         <h3 style="color:#2e7d32;">💡 Why is it important to stay healthy?</h3>
         <ul style="color:#1b5e20;">
